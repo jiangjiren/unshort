@@ -9,6 +9,7 @@ import re
 import urllib.parse
 import os
 import sys
+from flask import Flask
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # 创建Flask应用
 app = Flask(__name__, 
-            template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'templates'))
+            template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'))
 
 class TLSAdapter(HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs):
@@ -185,10 +186,10 @@ def api_expand():
 # 禁用不安全请求警告
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Vercel 需要这个处理函数
-def handler(event, context):
-    return app(event, context)
-
 # 本地开发时使用
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+    
+# Vercel Serverless Function 处理函数
+def handler(event, context):
+    return app
